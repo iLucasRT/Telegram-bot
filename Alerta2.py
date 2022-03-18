@@ -1,9 +1,7 @@
-import multiprocessing
-import time
 from urllib.request import Request, urlopen
-from repeater import RepeatedTimer
 from telegram import Update, ForceReply
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram.ext import Updater
+from twisted.internet import task, reactor
 
 
 def gaschecker():
@@ -24,19 +22,18 @@ def gaschecker():
     return float(gassafelow)
 
 def alerta(update: Update, patron):
-    try:
-        print('entré en alerta bro')
-        gasnow = gaschecker()
-        if float(gasnow) < float(patron):
-            print('en el if')
-            update.message.reply_text('Alerta! El precio del gas es de ' + str(gasnow))
-        else:
-            return None
-    except ValueError:
-        print('al except')
-        pass
+    print('entré en alerta bro')
+    gasnow = gaschecker()
+    if gasnow < float(patron):
+        update.message.reply_text('Alerta! El precio del gas es de ' + str(gasnow))
+    else:
+        return None
 
 def caller(update: Update, num):
+    tiempo = 1.5
+    l = task.LoopingCall(alerta)
+    l.start(tiempo)
     alerta(update, num)
-    #rt = RepeatedTimer(5, alerta, update, num)
-
+    print('estoy acá')
+    if update.message.text == '🔕 Desactivar alerta':
+        print('entré al if pa')

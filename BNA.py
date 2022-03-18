@@ -2,9 +2,10 @@ import json
 from urllib.request import Request, urlopen
 import requests
 
+
 def dolar_blue():
     url = 'https://api.estadisticasbcra.com/usd'
-    header = {'Authorization': 'BEARER (your token)'}
+    header = {'Authorization': 'BEARER eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzkxMDE4MDAsInR5cGUiOiJleHRlcm5hbCIsInVzZXIiOiJ0dW1pbGFzY2lsQGdtYWlsLmNvbSJ9.Znwt0xyLHGP8IgRkB-widW1XqzJjLBxmgdw0U4tb0p6Arhn5VArO29gJQezuvWjU2PE07QSY0l9F0cUlBa1r5w'}
     request = requests.get(url, headers=header)
     dolaroficial = request.json()
     largo = (len(dolaroficial)-1)
@@ -16,7 +17,7 @@ def dolar_blue():
 
 def dolar_oficial(impuesto):
     url = 'https://api.estadisticasbcra.com/usd_of'
-    header = {'Authorization': 'BEARER (your token)'}
+    header = {'Authorization': 'BEARER eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzkxMDE4MDAsInR5cGUiOiJleHRlcm5hbCIsInVzZXIiOiJ0dW1pbGFzY2lsQGdtYWlsLmNvbSJ9.Znwt0xyLHGP8IgRkB-widW1XqzJjLBxmgdw0U4tb0p6Arhn5VArO29gJQezuvWjU2PE07QSY0l9F0cUlBa1r5w'}
     request = requests.get(url, headers=header)
     dolaroficial = request.json()
     largo = (len(dolaroficial)-1)
@@ -38,7 +39,7 @@ def cotizaciones():
 
 def circulacion_monetaria():
     url = 'https://api.estadisticasbcra.com/circulacion_monetaria'
-    header = {'Authorization': 'BEARER (your token)'}
+    header = {'Authorization': 'BEARER eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzkxMDE4MDAsInR5cGUiOiJleHRlcm5hbCIsInVzZXIiOiJ0dW1pbGFzY2lsQGdtYWlsLmNvbSJ9.Znwt0xyLHGP8IgRkB-widW1XqzJjLBxmgdw0U4tb0p6Arhn5VArO29gJQezuvWjU2PE07QSY0l9F0cUlBa1r5w'}
     request = requests.get(url, headers=header)
     circulacion = request.json()
     largo = (len(circulacion)-1)
@@ -49,7 +50,7 @@ def circulacion_monetaria():
 
 def inflacion():
     url = 'https://api.estadisticasbcra.com/inflacion_interanual_oficial'
-    header = {'Authorization': 'BEARER (your token)'}
+    header = {'Authorization': 'BEARER eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzkxMDE4MDAsInR5cGUiOiJleHRlcm5hbCIsInVzZXIiOiJ0dW1pbGFzY2lsQGdtYWlsLmNvbSJ9.Znwt0xyLHGP8IgRkB-widW1XqzJjLBxmgdw0U4tb0p6Arhn5VArO29gJQezuvWjU2PE07QSY0l9F0cUlBa1r5w'}
     request = requests.get(url, headers=header)
     inflacion = request.json()
     largo = (len(inflacion)-1)
