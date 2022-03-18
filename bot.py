@@ -12,7 +12,7 @@ import random
 import os
 
 PORT = int(os.environ.get('PORT', '8443'))
-TOKEN = "2068821450:AAH48otmZ7kwRHNs7XEi69IZpwOcMgIKPHk"
+TOKEN = "YOURTOKEN"
 
 
 # Enable logging
@@ -229,8 +229,7 @@ def main() -> None:
     updater.start_webhook(listen="0.0.0.0",
                           port=PORT,
                           url_path=TOKEN,
-                          webhook_url=('https://lucasbotskywalker.herokuapp.com/' + TOKEN))
-    #updater.bot.setWebhook('https://lucasbotskywalker.herokuapp.com/' + TOKEN)
+                          webhook_url=('https://your-heroku-appname.herokuapp.com/' + TOKEN))
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
