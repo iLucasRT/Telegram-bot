@@ -7,3 +7,6 @@ Notes:
 
 17/03
 - The bot is working properly again
+
+18/03
+- Updated repository and bot to work properly on Heroku, you just need to enter the token and the name of your heroku app
