@@ -12,7 +12,7 @@ import os
 import csv
 
 PORT = int(os.environ.get('PORT', '8443'))
-TOKEN = "2068821450:AAH48otmZ7kwRHNs7XEi69IZpwOcMgIKPHk"
+TOKEN = "YOUR TOKEN"
 
 
 # Enable logging
@@ -220,18 +220,6 @@ def main_handler(update, context):
             token = token.lower()
             token_name = tokens.get(moneda)
             price(update, update.message.text, token, token_name)
-            """
-        elif moneda in tokensname:
-            moneda = str(moneda)
-            moneda = moneda.capitalize()
-            print(moneda)
-            token = tokensname.get(moneda)
-            print(token)
-            token = tokensid.get(token)
-            token = token.lower()
-            token_name = tokens.get(moneda)
-            price(update, update.message.text, token, token_name)
-            """
         else:
             num_random = random.randint(0,5)
             frases = ["Ups! No conozco ese comando",
@@ -239,11 +227,8 @@ def main_handler(update, context):
                     "Me gusta ayudarte pero por ahora no puedo hacerlo con eso que me pides 😢",
                     "A mi no me preguntes, solo soy un bot",
                     "Mi creador es alguien muy bueno y siempre está ayudandome a mejorar, espero que un día incluya eso que necesitas",
-                    "Lamponne el pedido es simple, hacé que Lucas desarrolle la función que este usuario me pide",
-                    ""]
+                    "Lamponne el pedido es simple, hacé que Lucas desarrolle la función que este usuario me pide"]
             update.message.reply_text(frases[num_random])
-    """else:
-        price(update, context)"""
 
 #def echo(update: Update, context: CallbackContext) -> None:
 #    Echo the user message.
@@ -274,8 +259,8 @@ def main() -> None:
     updater.start_webhook(listen="0.0.0.0",
                           port=PORT,
                           url_path=TOKEN,
-                          webhook_url=('https://lucasbotskywalker.herokuapp.com/' + TOKEN))
-    updater.start_polling()
+                          webhook_url=('https://your-app-name.herokuapp.com/' + TOKEN))
+    #updater.start_polling()
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
