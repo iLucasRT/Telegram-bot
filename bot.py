@@ -1,18 +1,18 @@
 import logging
 
-from telegram import Update, ForceReply
+from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from multiprocessing import Process
-import Prices, BNA, EthGas, Alerta, Restart, repeater
-from repeater import RepeatedTimer
-import subprocess
+from functions import Alerta, EthGas, Prices, BNA
+from classes.repeater import RepeatedTimer
 import time
 import random
 import os
+import csv
 
 PORT = int(os.environ.get('PORT', '8443'))
-TOKEN = "YOURTOKEN"
+TOKEN = "2068821450:AAH48otmZ7kwRHNs7XEi69IZpwOcMgIKPHk"
 
 
 # Enable logging
@@ -31,9 +31,26 @@ logger = logging.getLogger(__name__)
 def start(update: Update, context: CallbackContext):
     """Sends a message with three inline buttons attached."""
     fraserandom = random.randint(0, 3)
-    frases = ['Bienvenido! Que alegría volver a verte', 'Hola! Encantado de ayudarte', 'Hola! ¿En que te ayudo?', 'Hola! Soy Gasi y estoy para ayudarte 😁']
+    frases = ['Bienvenido! Que alegría verte', 'Hola! Encantado de ayudarte', 'Hola! ¿En que te ayudo?', 'Hola! Soy Gasi, ¿En que te ayudo? 😁']
     update.message.reply_text(frases[fraserandom])
     main_menu(update, context)
+
+def info(update: Update, context: CallbackContext):
+    update.message.reply_text("Hola 😁 Mi nombre es Gasi, soy un bot que puede consultar por tí algunos datos sobre la economía Argentina o sobre criptomonedas. \n"
+                              "Mi creador es Lucas. Él es una persona genial y siempre se preocupa de que yo pueda funcionar bien además de ayudarme siempre a mejorar. \n"
+                              "Al ser un bot no puedo sentir sentimientos por nadie 🤔 pero cuando mi creador me habla, algo en mi es diferente")
+
+def help_command(update: Update, context: CallbackContext):
+    update.message.reply_text('Veo que necesitas ayuda para que pueda ayudarte 😅 \n'
+                              'Pedirme ayuda es muy simple, solo debes pulsar sobre los botones del menú desplehable que saldrá en la parte inferior de tu pantalla,'
+                              'esos botones contienen todo lo que puedo hacer, y, de ser necesario que ingreses algo por texto te lo indicaré yo mismo. \n'
+                              'Espero haber resuelto tus dudas 🤗')
+
+def crypto_command(update: Update, context: CallbackContext):
+    update.message.reply_text('Puede que esto te parezca demasiado, pero ¿Sabías que puedo consultar el precio de mas de 13.000 criptomondas? 😲 \n'
+                              'En el menú inferior podrás observar que aparecen los símbolos de algunas criptomonedas que son consideradas las más importanes, pero si necesitas consultar otra'
+                              'no te preocupes, hacerlo es muy sencillo.\n'
+                              'Solo debes poner lo que se conoce como símbolo. Por ejemplo: el símbolo de Bitcoin es BTC, o el de Ethereum, ETH \n')
 
 
 def main_menu(update: Update, context: CallbackContext):
@@ -65,7 +82,7 @@ def argentina_menu_dolar(update: Update, context: CallbackContext):
 def crypto_menu(update: Update, context: CallbackContext):
     keyboard = [['💲 Precio de criptomonedas'],
                 ['⛽ Eth Gas'],
-                ['🔔 Alerta', '🔕 Desactivar alerta'],
+                ['🔔 Alerta (en desarrollo)', '🔕 Desactivar alerta'],
                 ['⏮️ Volver']]
     message = 'Bien, ahora selecciona una de las opciones'
     reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=False, resize_keyboard=True)
@@ -78,17 +95,11 @@ def remember_menu(update: Update, context: CallbackContext):
     reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=False, resize_keyboard=True)
     update.message.reply_text(message)
 
-
-def help_command(update: Update, context: CallbackContext) -> None:
-    """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
-
-
 def call_price(update: Update, context: CallbackContext) -> None:
     """Send a message with the price of the crypto in USD"""
     reply_markup = ReplyKeyboardRemove
-    keyboard = [['bitcoin', 'ethereum', 'pvu'],
-                ['cardano', 'cake'],
+    keyboard = [['btc', 'eth', 'rvn'],
+                ['ada', 'shib', 'bnb', 'doge'],
                 ['⏮️ Volver']]
     message = 'Elija la moneda a consultar'
     reply_markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=False, resize_keyboard=True)
@@ -112,8 +123,8 @@ def unkown_message(update: Update, context: CallbackContext):
 
 
 ################################################ Callers ############################################################
-def price(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text(Prices.ethereumprice(update.message.text))
+def price(update: Update, context: CallbackContext, token, token_name):
+    update.message.reply_text(Prices.ethereumprice(token, token_name))
 
 
 def gas(update: Update, context: CallbackContext) -> None:
@@ -177,12 +188,13 @@ def main_handler(update, context):
     elif msg == '💲 Precio de criptomonedas':
         call_price(update, context)
     ############### Remember menu #################
-    #elif msg == '🔔 Alerta':
+    elif msg == '🔔 Alerta (en desarrollo)':
     #    remember_process_starter(update, context)
+        update.message.reply_text("Ups! Esa función todavía está en desarrollo")
     elif msg == '🔕 Desactivar alerta':
         remember_process_starter(update, context)
-    elif msg[0] in '1234567890':
-        remember_process_starter(update, context)
+    #elif msg[0] in '1234567890':
+        #remember_process_starter(update, context)
     ############### Gas calls #####################
     elif msg == '⛽ Eth Gas':
         gas_options(update, context)
@@ -200,7 +212,38 @@ def main_handler(update, context):
     elif msg == '⏮️ Volver':
         main_menu(update, context)
     else:
-        price(update, context)
+        moneda = update.message.text
+        moneda = str(moneda)
+        moneda.lower()
+        if moneda in tokensid:
+            token = tokensid.get(moneda)
+            token = token.lower()
+            token_name = tokens.get(moneda)
+            price(update, update.message.text, token, token_name)
+            """
+        elif moneda in tokensname:
+            moneda = str(moneda)
+            moneda = moneda.capitalize()
+            print(moneda)
+            token = tokensname.get(moneda)
+            print(token)
+            token = tokensid.get(token)
+            token = token.lower()
+            token_name = tokens.get(moneda)
+            price(update, update.message.text, token, token_name)
+            """
+        else:
+            num_random = random.randint(0,5)
+            frases = ["Ups! No conozco ese comando",
+                    "Mi creador dice que si algo funciona bien es mejor no tocarlo, y creo que por eso no reconozco el comando que me solicitas",
+                    "Me gusta ayudarte pero por ahora no puedo hacerlo con eso que me pides 😢",
+                    "A mi no me preguntes, solo soy un bot",
+                    "Mi creador es alguien muy bueno y siempre está ayudandome a mejorar, espero que un día incluya eso que necesitas",
+                    "Lamponne el pedido es simple, hacé que Lucas desarrolle la función que este usuario me pide",
+                    ""]
+            update.message.reply_text(frases[num_random])
+    """else:
+        price(update, context)"""
 
 #def echo(update: Update, context: CallbackContext) -> None:
 #    Echo the user message.
@@ -218,7 +261,9 @@ def main() -> None:
 
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(CommandHandler("info", info))
     dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(CommandHandler('crypto', crypto_command))
     #dispatcher.add_handler(CommandHandler("price", call_price))
 
     # on non command i.e message - echo the message on Telegram
@@ -229,7 +274,8 @@ def main() -> None:
     updater.start_webhook(listen="0.0.0.0",
                           port=PORT,
                           url_path=TOKEN,
-                          webhook_url=('https://your-heroku-appname.herokuapp.com/' + TOKEN))
+                          webhook_url=('https://lucasbotskywalker.herokuapp.com/' + TOKEN))
+    updater.start_polling()
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
@@ -238,6 +284,15 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+    tokensid = {}
+    tokens = {}
+    tokensname = {}
+    with open('databases/tokens_db.csv', newline='', encoding='utf-8') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        for row in reader:
+            tokensid[row[1]] = row[0]
+            tokens[row[1]] = row[2]
+            tokensname[row[2]] = row[1]
     lista = []
     lista2 = []
     main()
