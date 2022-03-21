@@ -1,5 +1,4 @@
 from pycoingecko import CoinGeckoAPI
-import csv
 
 cg = CoinGeckoAPI()
 
