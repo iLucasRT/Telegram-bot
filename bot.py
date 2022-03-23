@@ -11,7 +11,7 @@ import os
 import sqlite3
 
 PORT = int(os.environ.get('PORT', '8443'))
-TOKEN = "2068821450:AAH48otmZ7kwRHNs7XEi69IZpwOcMgIKPHk"
+TOKEN = "YOUR TOKEN"
 
 
 # Enable logging
@@ -259,7 +259,7 @@ def main() -> None:
     updater.start_webhook(listen="0.0.0.0",
                           port=PORT,
                           url_path=TOKEN,
-                          webhook_url=('https://lucasbotskywalker.herokuapp.com/' + TOKEN))
+                          webhook_url=('https://your-app-name.herokuapp.com/' + TOKEN))
 
     updater.start_polling()
 
@@ -270,7 +270,7 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    myConectionn = sqlite3.connect('ddbb/tokens', check_same_thread=False)
+    myConectionn = sqlite3.connect('db/tokens', check_same_thread=False)
     myCursor = myConectionn.cursor()
     lista = []
     lista2 = []
