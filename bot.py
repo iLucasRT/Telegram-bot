@@ -1,18 +1,17 @@
 import logging
 
-from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from multiprocessing import Process
-from functions import Alerta, EthGas, Prices, BNA
+from modules import Alerta, EthGas, Prices, BNA, TokenConsultant
 from classes.repeater import RepeatedTimer
 import time
 import random
 import os
-import csv
+import sqlite3
 
 PORT = int(os.environ.get('PORT', '8443'))
-TOKEN = "YOUR TOKEN"
+TOKEN = "2068821450:AAH48otmZ7kwRHNs7XEi69IZpwOcMgIKPHk"
 
 
 # Enable logging
@@ -130,7 +129,6 @@ def price(update: Update, context: CallbackContext, token, token_name):
 def gas(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(EthGas.gaschecker(update.message.text))
 
-
 def arg_functions(update: Update, context: CallbackContext):
     update.message.reply_text('Estoy chequeando los datos, dame un momento')
     time.sleep(2)
@@ -212,14 +210,14 @@ def main_handler(update, context):
     elif msg == '⏮️ Volver':
         main_menu(update, context)
     else:
-        moneda = update.message.text
-        moneda = str(moneda)
-        moneda.lower()
-        if moneda in tokensid:
-            token = tokensid.get(moneda)
-            token = token.lower()
-            token_name = tokens.get(moneda)
-            price(update, update.message.text, token, token_name)
+        token = update.message.text
+        token = str(token)
+        token = token.lower()
+        token.lower()
+        token, tokenName = TokenConsultant.search(token, myCursor)
+        print(token, tokenName)
+        if (token != False) or (tokenName != False):
+            price(update, update.message.text, token, tokenName)
         else:
             num_random = random.randint(0,5)
             frases = ["Ups! No conozco ese comando",
@@ -229,6 +227,8 @@ def main_handler(update, context):
                     "Mi creador es alguien muy bueno y siempre está ayudandome a mejorar, espero que un día incluya eso que necesitas",
                     "Lamponne el pedido es simple, hacé que Lucas desarrolle la función que este usuario me pide"]
             update.message.reply_text(frases[num_random])
+    """else:
+        price(update, context)"""
 
 #def echo(update: Update, context: CallbackContext) -> None:
 #    Echo the user message.
@@ -259,8 +259,9 @@ def main() -> None:
     updater.start_webhook(listen="0.0.0.0",
                           port=PORT,
                           url_path=TOKEN,
-                          webhook_url=('https://your-app-name.herokuapp.com/' + TOKEN))
-    #updater.start_polling()
+                          webhook_url=('https://lucasbotskywalker.herokuapp.com/' + TOKEN))
+
+    updater.start_polling()
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
@@ -269,15 +270,8 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    tokensid = {}
-    tokens = {}
-    tokensname = {}
-    with open('databases/tokens_db.csv', newline='', encoding='utf-8') as csvfile:
-        reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-        for row in reader:
-            tokensid[row[1]] = row[0]
-            tokens[row[1]] = row[2]
-            tokensname[row[2]] = row[1]
+    myConectionn = sqlite3.connect('ddbb/tokens', check_same_thread=False)
+    myCursor = myConectionn.cursor()
     lista = []
     lista2 = []
     main()
