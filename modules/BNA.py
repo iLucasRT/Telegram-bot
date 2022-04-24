@@ -26,6 +26,7 @@ def dolar_oficial(impuesto):
     if impuesto == '💵 Dólar oficial con impuestos':
         dolaroficial = (float(dolaroficial)*1.65)
         dolaroficial = str(dolaroficial)
+        return 'El valor del dólar solidario es de $' + dolaroficial[:6]
     if '.' in dolaroficial:
         dolaroficial = dolaroficial.replace('.', ',')
     return 'El valor del dólar oficial es de $' + dolaroficial[:6]
